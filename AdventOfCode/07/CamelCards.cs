@@ -8,72 +8,48 @@ public class CamelCards
 
         var result = input
             .Select(x => x.Split(" "))
-            .Select(x => new Hand(Cards: ParseCards(x[0]), Bid: int.Parse(x[1])))
-            .OrderDescending(new HandComparer())
+            .Select(x => new Hand(EncodeCardsValue(x[0]), int.Parse(x[1])))
+            .OrderBy(hand => hand.Value)
             .Select((hand, i) => hand.Bid * (i + 1))
             .Sum();
 
         Console.WriteLine(result);
     }
 
-    class HandComparer : Comparer<Hand>
-    {
-        public override int Compare(Hand? x, Hand? y)
-        {
-            // First rule: compare type
-            var typeComparison = x.Type.CompareTo(y.Type);
-            
-            if (typeComparison != 0) return typeComparison;
-            
-            // Second rule: find first strongest card
-            var (cx, cy) = x.Cards.Zip(y.Cards)
-                .SkipWhile(e => e.First == e.Second)
-                .First();
+    // Encode cards value into a sortable string
+    //           type   sequence 
+    // AAA23 => 31100  1212120001
+    private static string EncodeCardsValue(string cards)
+        => EncodeCardsJType(cards) + EncodeCardsSequence(cards);
 
-            return cx.CompareTo(cy);
-        }
-    }
+    // AAAAA => 50000
+    // KKKK5 => 41000
+    // QQQJJ => 32000
+    // JJJ32 => 31100
+    // TT998 => 22100
+    // 88765 => 21110
+    // 76543 => 11111
+    private static string EncodeCardsType(string cards)
+        => string.Join("", cards.ToLookup(x => x)
+                .Select(x => x.Count())
+                .OrderDescending())
+            .PadRight(5, '0');
     
-    private static HandType GetHandType(Card[] cards)
-    {
-        var jcount = cards.Count(x => x == Card.CJ);
-        
-        var lookup = cards
-            .Where(x => x != Card.CJ)
-            .ToLookup(x => x);
-
-        if (jcount == 5 ||
-            lookup.Any(x => x.Count() + jcount == 5))
-            return HandType.FiveOfAKind;
-
-        if (lookup.Any(x => x.Count() + jcount == 4))
-            return HandType.FourOfAKind;
-        
-        if (lookup.Any(x => x.Count() == 3) && 
-            lookup.Any(x => x.Count() == 2))
-            return HandType.FullHouse;
-            
-        if (lookup.Count(x => x.Count() == 2) == 2)
-            return jcount > 0 ? HandType.FullHouse : HandType.TwoPairs;
-
-        if (lookup.Any(x => x.Count() + jcount == 3))
-            return HandType.ThreeOfAKind;
-        
-        if (lookup.Any(x => x.Count() + jcount == 2))
-            return HandType.OnePair;
-
-        return HandType.HighCard;
-    }
-
-    private static Card[] ParseCards(string cards) => cards.ToCharArray()
-            .Select(x => Enum.Parse<Card>($"C{x}"))
-            .ToArray();
+    // JJJJJ => 5
+    // JJJJ* => 5
+    // JJJ** => 2: 5, 11: 41
+    // JJ*** => 21: 41, 111: 311
+    // J**** => 4: 5, 31: 41, 22: 32, 211: 311, 1111: 2111
+    private static string EncodeCardsJType(string cards)
+        => (int.Parse(EncodeCardsType(cards.Replace("J", "")))
+            + cards.Count(c => c == 'J') * 10000).ToString();
     
-    record Hand(Card[] Cards, int Bid)
-    {
-        public HandType Type { get; } = GetHandType(Cards);
-    };
-    
-    enum HandType { FiveOfAKind, FourOfAKind, FullHouse, ThreeOfAKind, TwoPairs, OnePair, HighCard };
-    enum Card { CA, CK, CQ, CT, C9, C8, C7, C6, C5, C4, C3, C2, CJ };
+    private const string Cards = "J23456789TQKA";
+
+    // 234TA => 0001020812
+    // 22KKK => 0000111111
+    private static string EncodeCardsSequence(string cards)
+        => string.Join("", cards.Select(c => Cards.IndexOf(c).ToString("D2")));
+
+    record Hand(string Value, int Bid);
 }
