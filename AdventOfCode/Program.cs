@@ -4,10 +4,12 @@ using AdventOfCode._03;
 using AdventOfCode._04;
 using AdventOfCode._05;
 using AdventOfCode._06;
+using AdventOfCode._07;
 
 // await Trebuchet.MainAsync();
 // await CubeConundrum.MainAsync();
 // await GearRatios.MainAsync();
 // await Scratchcards.MainAsync();
 // await Fertilizer.MainAsync();
-await BoatRace.MainAsync();
+// await BoatRace.MainAsync();
+await CamelCards.MainAsync();
