@@ -44,7 +44,6 @@ public class PipeMaze
 
             direction = GetDestination(maze[current.Row][current.Column], direction);
             current = current.Move(direction);
-
         }
         
         yield return current;
@@ -98,13 +97,13 @@ public class PipeMaze
         _ => throw new Exception($"Cannot find destination for '{symbol}', source {source}")
     };
 
-    readonly record struct Position(int Row, int Column)
+    private readonly record struct Position(int Row, int Column)
     {
         public Position Move(Direction direction) 
             => new(Row + direction.RowOffset, Column + direction.ColumnOffset);
     }
 
-    private record struct Direction(int RowOffset, int ColumnOffset)
+    private readonly record struct Direction(int RowOffset, int ColumnOffset)
     {
         public static readonly Direction Left = new (0, -1);
         public static readonly Direction Right = new (0, 1);
