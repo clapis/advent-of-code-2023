@@ -7,6 +7,7 @@ using AdventOfCode._06;
 using AdventOfCode._07;
 using AdventOfCode._08;
 using AdventOfCode._09;
+using AdventOfCode._10;
 
 // await Trebuchet.MainAsync();
 // await CubeConundrum.MainAsync();
@@ -16,4 +17,5 @@ using AdventOfCode._09;
 // await BoatRace.MainAsync();
 // await CamelCards.MainAsync();
 // await Wasteland.MainAsync();
-await Mirage.MainAsync();
+// await Mirage.MainAsync();
+await PipeMaze.MainAsync();
