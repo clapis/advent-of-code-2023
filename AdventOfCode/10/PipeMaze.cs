@@ -9,10 +9,9 @@ public class PipeMaze
         var maze = input.Select(x => x.ToCharArray()).ToArray();
 
         var start = FindStartPosition(maze);
-        var direction = FindStartDirection(maze, start);
-        var loop = TraverseLoop(maze, start, direction);
+        var loop = TraverseLoop(maze, start);
 
-        var tiles = CalculateTilesWithinLoop(loop.ToArray());
+        var tiles = CalculateTilesWithinLoop(loop);
         
         Console.WriteLine(tiles);
     }
@@ -34,19 +33,23 @@ public class PipeMaze
         return area + 1 - positions.Length / 2;
     }
 
-    private static IEnumerable<Position> TraverseLoop(char[][] maze, Position start, Direction direction)
+    private static Position[] TraverseLoop(char[][] maze, Position start)
     {
-        var current = start.Move(direction);
+        var loop = new List<Position> { start };
+        
+        var current = GetConnectingPipes(maze, start).First();
 
         while (current != start)
         {
-            yield return current;
+            var next = GetConnectingPipes(maze, current)
+                .Single(x => x != loop.Last());
+            
+            loop.Add(current);
 
-            direction = GetDestination(maze[current.Row][current.Column], direction);
-            current = current.Move(direction);
+            current = next;
         }
-        
-        yield return current;
+
+        return loop.ToArray();
     }
 
     private static Position FindStartPosition(char[][] maze)
@@ -58,56 +61,31 @@ public class PipeMaze
         throw new Exception("Cannot find start");
     }
     
-    private static readonly char[] UpSymbols = { '|', 'J', 'L' };
-    private static readonly char[] DownSymbols = { '|', 'F', '7' };
-    private static readonly char[] LeftSymbols = { '-', '7', 'J' };
-    private static readonly char[] RightSymbols = { '_', 'F', 'L' };
+    private static readonly char[] UpSymbols = { '|', 'J', 'L', 'S' };
+    private static readonly char[] DownSymbols = { '|', 'F', '7', 'S' };
+    private static readonly char[] LeftSymbols = { '-', '7', 'J', 'S' };
+    private static readonly char[] RightSymbols = { '-', 'F', 'L', 'S' };
 
-    private static Direction FindStartDirection(char[][] maze, Position start)
+    private static IEnumerable<Position> GetConnectingPipes(char[][] maze, Position start)
     {
-        if (start.Row > 0 && DownSymbols.Contains(maze[start.Row - 1][start.Column]))
-            return Direction.Up;
+        var symbol = maze[start.Row][start.Column];
         
-        if (start.Row < maze.Length - 1 && UpSymbols.Contains(maze[start.Row + 1][start.Column]))
-            return Direction.Down;
+        if (UpSymbols.Contains(symbol) && 
+            start.Row > 0 && DownSymbols.Contains(maze[start.Row - 1][start.Column]))
+            yield return start with { Row = start.Row - 1 };
 
-        if (start.Column > 0 && RightSymbols.Contains(maze[start.Row][start.Column - 1]))
-            return Direction.Left;
+        if (DownSymbols.Contains(symbol) && 
+            start.Row < maze.Length - 1 && UpSymbols.Contains(maze[start.Row + 1][start.Column]))
+            yield return start with { Row = start.Row + 1 };
 
-        if (start.Column < maze[start.Row].Length - 1 && LeftSymbols.Contains(maze[start.Row][start.Column + 1]))
-            return Direction.Right;
-        
-        throw new Exception("Cannot find connecting pipe for start");
+        if (LeftSymbols.Contains(symbol) && 
+            start.Column > 0 && RightSymbols.Contains(maze[start.Row][start.Column - 1]))
+            yield return start with { Column = start.Column - 1 };
+
+        if (RightSymbols.Contains(symbol) && 
+            start.Column < maze[start.Row].Length - 1 && LeftSymbols.Contains(maze[start.Row][start.Column + 1]))
+            yield return start with { Column = start.Column + 1 };
     }
 
-    private static Direction GetDestination(char symbol, Direction source) => symbol switch
-    {
-        '|' when source == Direction.Down => Direction.Down,
-        '|' when source == Direction.Up => Direction.Up,
-        '-' when source == Direction.Right => Direction.Right,
-        '-' when source == Direction.Left => Direction.Left,
-        'L' when source == Direction.Down => Direction.Right,
-        'L' when source == Direction.Left => Direction.Up,
-        '7' when source == Direction.Up => Direction.Left,
-        '7' when source == Direction.Right => Direction.Down,
-        'J' when source == Direction.Down => Direction.Left,
-        'J' when source == Direction.Right => Direction.Up,
-        'F' when source == Direction.Up => Direction.Right,
-        'F' when source == Direction.Left => Direction.Down,
-        _ => throw new Exception($"Cannot find destination for '{symbol}', source {source}")
-    };
-
-    private readonly record struct Position(int Row, int Column)
-    {
-        public Position Move(Direction direction) 
-            => new(Row + direction.RowOffset, Column + direction.ColumnOffset);
-    }
-
-    private readonly record struct Direction(int RowOffset, int ColumnOffset)
-    {
-        public static readonly Direction Left = new (0, -1);
-        public static readonly Direction Right = new (0, 1);
-        public static readonly Direction Down = new (1, 0);
-        public static readonly Direction Up = new (-1, 0);
-    }
+    private readonly record struct Position(int Row, int Column);
 }
