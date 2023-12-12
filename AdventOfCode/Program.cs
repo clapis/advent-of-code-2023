@@ -9,6 +9,7 @@ using AdventOfCode._08;
 using AdventOfCode._09;
 using AdventOfCode._10;
 using AdventOfCode._11;
+using AdventOfCode._12;
 
 // await Trebuchet.MainAsync();
 // await CubeConundrum.MainAsync();
@@ -20,4 +21,5 @@ using AdventOfCode._11;
 // await Wasteland.MainAsync();
 // await Mirage.MainAsync();
 // await PipeMaze.MainAsync();
-await CosmicExpansion.MainAsync();
+// await CosmicExpansion.MainAsync();
+await HotSprings.MainAsync();
