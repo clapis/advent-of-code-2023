@@ -77,8 +77,15 @@
     <None Update="12\input.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="13\input.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="13\test.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
 
   </ItemGroup>
+
 
 
 
