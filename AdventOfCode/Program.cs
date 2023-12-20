@@ -16,6 +16,7 @@ using AdventOfCode._15;
 using AdventOfCode._16;
 using AdventOfCode._17;
 using AdventOfCode._18;
+using AdventOfCode._19;
 
 // await Trebuchet.MainAsync();
 // await CubeConundrum.MainAsync();
@@ -34,4 +35,5 @@ using AdventOfCode._18;
 // await LensLibrary.MainAsync();
 // await LavaFloor.MainAsync();
 // await ClumsyCrucible.MainAsync();
-await LavaductLagoon.MainAsync();
+// await LavaductLagoon.MainAsync();
+await Aplenty.MainAsync();
