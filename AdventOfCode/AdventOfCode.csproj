@@ -119,6 +119,12 @@
     <None Update="19\test.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="20\input.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="20\test.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
 
 
 
