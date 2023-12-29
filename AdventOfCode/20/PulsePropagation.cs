@@ -4,6 +4,7 @@ public class PulsePropagation
 {
     private const StringSplitOptions DefaultSplit =
         StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries;
+    
     public static async Task MainAsync()
     {
         var input = await File.ReadAllLinesAsync("./20/input.txt");
